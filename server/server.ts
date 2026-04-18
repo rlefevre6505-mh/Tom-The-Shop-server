@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import { db } from "./dbconnections.js";
+import { db } from "./dbconnection";
 
 const app = express();
 app.use(express.json());
@@ -19,7 +19,7 @@ app.post("/set-date", (request, response) => {
   const query = db.query(`INSERT INTO date_test () VALUES ($1)`, [
     reviewForm.date,
   ]);
-  response.json({ staus: "success", values: reviewForm });
+  response.json({ status: "success", values: reviewForm });
 });
 
 // GET REQUESTS

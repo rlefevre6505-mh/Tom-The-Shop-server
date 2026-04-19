@@ -14,10 +14,11 @@ app.get("/", (request, response) =>
 //
 app.post("/set-date", (request, response) => {
   try {
-    // const form = request.body.formValues;
     const form = request.body;
+
+    // TODO: add "await"
     const query = db.query(
-      `INSERT INTO date_test (title, start, end) VALUES ($1, $2, $3)`,
+      `INSERT INTO date_test (title, "start", "end") VALUES ($1, $2, $3)`,
       [form.title, form.start, form.end],
     );
     response.json({ status: "success", values: form });
@@ -29,7 +30,7 @@ app.post("/set-date", (request, response) => {
 // GET REQUESTS
 //
 app.get("/stored-events", async function (request, response) {
-  const query = await db.query(`SELECT title, start, end FROM date_test;`);
+  const query = await db.query(`SELECT title, "start", "end" FROM date_test;`);
   console.log(query.rows);
   const data = response.json(query.rows);
 });

@@ -15,12 +15,16 @@ app.get("/", (request, response) =>
 //TODO: test for db connection and date functionality
 //
 app.post("/set-date", (request, response) => {
-  const form = request.body.formValues;
-  const query = db.query(
-    `INSERT INTO date_test (event_title, start_date, end_date) VALUES ($1, $2, $3)`,
-    [form.event_title, form.start_date, form.end_date],
-  );
-  response.json({ status: "success", values: form });
+  try {
+    const form = request.body.formValues;
+    const query = db.query(
+      `INSERT INTO date_test (event_title, start_date, end_date) VALUES ($1, $2, $3)`,
+      [form.event_title, form.start_date, form.end_date],
+    );
+    response.json({ status: "success", values: form });
+  } catch (error) {
+    console.error(`Error: ${error}`);
+  }
 });
 
 // GET REQUESTS

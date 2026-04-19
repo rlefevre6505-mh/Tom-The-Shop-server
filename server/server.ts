@@ -19,8 +19,8 @@ app.post("/set-date", (request, response) => {
     // const form = request.body.formValues;
     const form = request.body;
     const query = db.query(
-      `INSERT INTO date_test (event_title, start_date, end_date) VALUES ($1, $2, $3)`,
-      [form.event_title, form.start_date, form.end_date],
+      `INSERT INTO date_test (title, start, end) VALUES ($1, $2, $3)`,
+      [form.title, form.start, form.end],
     );
     response.json({ status: "success", values: form });
   } catch (error) {
@@ -31,9 +31,7 @@ app.post("/set-date", (request, response) => {
 // GET REQUESTS
 //
 app.get("/stored-events", async function (request, response) {
-  const query = await db.query(
-    `SELECT event_title, start_date, end_date FROM date_test;`,
-  );
+  const query = await db.query(`SELECT title, start, end FROM date_test;`);
   console.log(query.rows);
   const data = response.json(query.rows);
 });

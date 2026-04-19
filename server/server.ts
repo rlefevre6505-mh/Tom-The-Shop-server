@@ -12,8 +12,6 @@ app.get("/", (request, response) =>
 
 // POST REQUESTS
 //
-//TODO: test for db connection and date functionality
-//
 app.post("/set-date", (request, response) => {
   try {
     // const form = request.body.formValues;

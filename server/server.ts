@@ -16,7 +16,8 @@ app.get("/", (request, response) =>
 //
 app.post("/set-date", (request, response) => {
   try {
-    const form = request.body.formValues;
+    // const form = request.body.formValues;
+    const form = request.body;
     const query = db.query(
       `INSERT INTO date_test (event_title, start_date, end_date) VALUES ($1, $2, $3)`,
       [form.event_title, form.start_date, form.end_date],

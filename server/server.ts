@@ -30,7 +30,9 @@ app.post("/set-date", (request, response) => {
 // GET REQUESTS
 //
 app.get("/stored-events", async function (request, response) {
-  const query = await db.query(`SELECT title, "start", "end" FROM date_test;`);
+  const query = await db.query(
+    `SELECT id, title, "start", "end" FROM date_test;`,
+  );
   console.log(query.rows);
   const data = response.json(query.rows);
 });

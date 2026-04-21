@@ -16,7 +16,7 @@ app.post("/set-date", (req, res) => {
   try {
     const form = req.body;
     const query = db.query(
-      `INSERT INTO date_test (title, "start", "end") VALUES ($1, $2, $3)`,
+      `INSERT INTO tts_events (title, "start", "end") VALUES ($1, $2, $3)`,
       [form.title, form.start, form.end],
     );
     res.json({ status: "success", values: form });
@@ -30,7 +30,7 @@ app.post("/set-date", (req, res) => {
 app.get("/stored-events", async function (req, res) {
   try {
     const query = await db.query(
-      `SELECT id, title, "start", "end" FROM date_test;`,
+      `SELECT id, title, "start", "end" FROM tts_events;`,
     );
     const data = res.json(query.rows);
   } catch (error) {
@@ -41,7 +41,7 @@ app.get("/stored-events", async function (req, res) {
 app.post("/selected-event", async function (req, res) {
   try {
     const { id } = req.body;
-    const query = await db.query(`SELECT * FROM date_test WHERE id = $1;`, [
+    const query = await db.query(`SELECT * FROM tts_events WHERE id = $1;`, [
       id,
     ]);
     const data = res.json(query.rows[0]);

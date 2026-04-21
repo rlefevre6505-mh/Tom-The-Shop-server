@@ -38,7 +38,7 @@ app.get("/stored-events", async function (req, res) {
   }
 });
 // get event for SelectedEventView
-app.get("/selected-event", async function (req, res) {
+app.post("/selected-event", async function (req, res) {
   try {
     const { id } = req.body;
     const query = await db.query(`SELECT * FROM date_test WHERE id = $1;`, [

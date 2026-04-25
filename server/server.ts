@@ -49,26 +49,6 @@ app.post("/selected-event", async function (req, res) {
   try {
     const { id } = req.body;
     const query = await db.query(
-      // `
-      // // SELECT
-      // //   e.*,
-      // //   COALESCE(
-      // //     json_agg(
-      // //       json_build_object(
-      // //         'id', v.id,
-      // //         'vehicle_name', v.vehicle_name,
-      // //         'vehicle_reg', v.vehicle_reg
-      // //       )
-      // //     ) FILTER (WHERE v.id IS NOT NULL),
-      // //     '[]'
-      // //   ) AS vehicles
-      // // FROM tts_events e
-      // // LEFT JOIN event_vehicles ev ON ev.event_id = e.id
-      // // LEFT JOIN vehicles v ON v.id = ev.vehicle_id
-      // // WHERE e.id = $1
-      // // GROUP BY e.id
-      // // `
-
       `SELECT 
   e.*,
 
@@ -114,6 +94,24 @@ GROUP BY e.id`,
   } catch (error) {
     console.error(`Error: ${error}`);
     res.status(500).json({ error: "Server error" });
+  }
+});
+// get all events for CalendarView
+app.get("/get-shops", async function (req, res) {
+  try {
+    const query = await db.query(`SELECT * FROM shops;`);
+    const data = res.json(query.rows);
+  } catch (error) {
+    console.error(`Error: ${error}`);
+  }
+});
+// get all events for CalendarView
+app.get("/get-vehicles", async function (req, res) {
+  try {
+    const query = await db.query(`SELECT * FROM vehicles`);
+    const data = res.json(query.rows);
+  } catch (error) {
+    console.error(`Error: ${error}`);
   }
 });
 

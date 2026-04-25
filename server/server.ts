@@ -49,25 +49,65 @@ app.post("/selected-event", async function (req, res) {
   try {
     const { id } = req.body;
     const query = await db.query(
-      `
-      SELECT 
-        e.*,
-        COALESCE(
-          json_agg(
-            json_build_object(
-              'id', v.id,
-              'vehicle_name', v.vehicle_name,
-              'vehicle_reg', v.vehicle_reg
-            )
-          ) FILTER (WHERE v.id IS NOT NULL),
-          '[]'
-        ) AS vehicles
-      FROM tts_events e
-      LEFT JOIN event_vehicles ev ON ev.event_id = e.id
-      LEFT JOIN vehicles v ON v.id = ev.vehicle_id
-      WHERE e.id = $1
-      GROUP BY e.id
-      `,
+      // `
+      // // SELECT
+      // //   e.*,
+      // //   COALESCE(
+      // //     json_agg(
+      // //       json_build_object(
+      // //         'id', v.id,
+      // //         'vehicle_name', v.vehicle_name,
+      // //         'vehicle_reg', v.vehicle_reg
+      // //       )
+      // //     ) FILTER (WHERE v.id IS NOT NULL),
+      // //     '[]'
+      // //   ) AS vehicles
+      // // FROM tts_events e
+      // // LEFT JOIN event_vehicles ev ON ev.event_id = e.id
+      // // LEFT JOIN vehicles v ON v.id = ev.vehicle_id
+      // // WHERE e.id = $1
+      // // GROUP BY e.id
+      // // `
+
+      `SELECT 
+  e.*,
+
+  -- Vehicles array
+  COALESCE(
+    json_agg(
+      DISTINCT jsonb_build_object(
+        'id', v.id,
+        'vehicle_name', v.vehicle_name,
+        'vehicle_reg', v.vehicle_reg
+      )
+    ) FILTER (WHERE v.id IS NOT NULL),
+    '[]'
+  ) AS vehicles,
+
+  -- Shops array
+  COALESCE(
+    json_agg(
+      DISTINCT jsonb_build_object(
+        'id', s.id,
+        'shop_name', s.shop_name
+      )
+    ) FILTER (WHERE s.id IS NOT NULL),
+    '[]'
+  ) AS shops
+
+FROM tts_events e
+
+-- VEHICLES
+LEFT JOIN event_vehicles ev ON ev.event_id = e.id
+LEFT JOIN vehicles v ON v.id = ev.vehicle_id
+
+-- SHOPS
+LEFT JOIN event_shops es ON es.event_id = e.id
+LEFT JOIN shops s ON s.id = es.shop_id
+
+WHERE e.id = $1
+GROUP BY e.id`,
+
       [id],
     );
     const data = res.json(query.rows[0]);

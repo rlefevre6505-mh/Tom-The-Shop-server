@@ -99,7 +99,8 @@ GROUP BY e.id`,
 // get all events for CalendarView
 app.get("/get-shops", async function (req, res) {
   try {
-    const query = await db.query(`SELECT * FROM shops;`);
+    const query = await db.query(`SELECT json_agg(shops) AS shops
+FROM shops;`);
     const data = res.json(query.rows);
   } catch (error) {
     console.error(`Error: ${error}`);
@@ -108,7 +109,8 @@ app.get("/get-shops", async function (req, res) {
 // get all events for CalendarView
 app.get("/get-vehicles", async function (req, res) {
   try {
-    const query = await db.query(`SELECT * FROM vehicles`);
+    const query = await db.query(`SELECT json_agg(vehicles) AS vehicles
+FROM vehicles;`);
     const data = res.json(query.rows);
   } catch (error) {
     console.error(`Error: ${error}`);

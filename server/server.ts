@@ -96,22 +96,22 @@ GROUP BY e.id`,
     res.status(500).json({ error: "Server error" });
   }
 });
-// get all events for CalendarView
+// get list of all shops
 app.get("/get-shops", async function (req, res) {
   try {
     const query = await db.query(`SELECT json_agg(shops) AS shops
 FROM shops;`);
-    const data = res.json(query.rows);
+    res.json(query.rows[0].shops);
   } catch (error) {
     console.error(`Error: ${error}`);
   }
 });
-// get all events for CalendarView
+// get list of all vehicles
 app.get("/get-vehicles", async function (req, res) {
   try {
     const query = await db.query(`SELECT json_agg(vehicles) AS vehicles
 FROM vehicles;`);
-    const data = res.json(query.rows);
+    res.json(query.rows[0].vehicles);
   } catch (error) {
     console.error(`Error: ${error}`);
   }

@@ -34,7 +34,7 @@ app.post("/add-event", (req, res) => {
 });
 
 // add note to event
-app.post("/add-event", (req, res) => {
+app.post("/add-note", (req, res) => {
   try {
     const form = req.body;
     const query = db.query(

@@ -12,6 +12,7 @@ app.get("/", (req, res) =>
 
 // POST REQUESTS
 //
+// add a new event
 app.post("/add-event", (req, res) => {
   try {
     const form = req.body;
@@ -32,7 +33,22 @@ app.post("/add-event", (req, res) => {
   }
 });
 
+// add note to event
+app.post("/add-event", (req, res) => {
+  try {
+    const form = req.body;
+    const query = db.query(
+      `INSERT INTO tts_events (note, event_id) VALUES ($1, $2)`,
+      [form.note, form.event_id],
+    );
+    res.json({ status: "success", values: form });
+  } catch (error) {
+    console.error(`Error: ${error}`);
+  }
+});
+
 // GET REQUESTS
+//
 // get all events for CalendarView
 app.get("/stored-events", async function (req, res) {
   try {
@@ -44,6 +60,7 @@ app.get("/stored-events", async function (req, res) {
     console.error(`Error: ${error}`);
   }
 });
+//
 // get event for SelectedEventView
 app.post("/selected-event", async function (req, res) {
   try {
@@ -51,7 +68,6 @@ app.post("/selected-event", async function (req, res) {
     const query = await db.query(
       `SELECT 
   e.*,
-
   -- Vehicles array
   COALESCE(
     json_agg(
@@ -63,7 +79,6 @@ app.post("/selected-event", async function (req, res) {
     ) FILTER (WHERE v.id IS NOT NULL),
     '[]'
   ) AS vehicles,
-
   -- Shops array
   COALESCE(
     json_agg(
@@ -74,20 +89,15 @@ app.post("/selected-event", async function (req, res) {
     ) FILTER (WHERE s.id IS NOT NULL),
     '[]'
   ) AS shops
-
 FROM tts_events e
-
 -- VEHICLES
 LEFT JOIN event_vehicles ev ON ev.event_id = e.id
 LEFT JOIN vehicles v ON v.id = ev.vehicle_id
-
 -- SHOPS
 LEFT JOIN event_shops es ON es.event_id = e.id
 LEFT JOIN shops s ON s.id = es.shop_id
-
 WHERE e.id = $1
 GROUP BY e.id`,
-
       [id],
     );
     const data = res.json(query.rows[0]);
@@ -96,6 +106,7 @@ GROUP BY e.id`,
     res.status(500).json({ error: "Server error" });
   }
 });
+//
 // get list of all shops
 app.get("/get-shops", async function (req, res) {
   try {
@@ -106,6 +117,7 @@ FROM shops;`);
     console.error(`Error: ${error}`);
   }
 });
+//
 // get list of all vehicles
 app.get("/get-vehicles", async function (req, res) {
   try {

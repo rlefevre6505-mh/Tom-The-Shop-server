@@ -34,16 +34,19 @@ app.post("/add-event", (req, res) => {
 });
 
 // add note to event
-app.post("/add-note", (req, res) => {
+app.post("/add-note", async (req, res) => {
   try {
     const form = req.body;
-    const query = db.query(
-      `INSERT INTO tts_events (note, event_id) VALUES ($1, $2)`,
-      [form.note, form.event_id],
-    );
+
+    await db.query(`INSERT INTO notes (note, event_id) VALUES ($1, $2)`, [
+      form.note,
+      form.event_id,
+    ]);
+
     res.json({ status: "success", values: form });
   } catch (error) {
-    console.error(`Error: ${error}`);
+    console.error("Error inserting note:", error);
+    res.status(500).json({ status: "error", message: "Failed to add note" });
   }
 });
 

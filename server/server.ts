@@ -89,6 +89,15 @@ app.post("/selected-event", async function (req, res) {
     ) FILTER (WHERE s.id IS NOT NULL),
     '[]'
   ) AS shops
+     -- Notes array
+  COALESCE(
+    json_agg(
+      DISTINCT jsonb_build_object(
+        'note', n.note
+      )
+    ) FILTER (WHERE n.note IS NOT NULL),
+    '[]'
+  ) AS notes
 FROM tts_events e
 -- VEHICLES
 LEFT JOIN event_vehicles ev ON ev.event_id = e.id
@@ -96,6 +105,8 @@ LEFT JOIN vehicles v ON v.id = ev.vehicle_id
 -- SHOPS
 LEFT JOIN event_shops es ON es.event_id = e.id
 LEFT JOIN shops s ON s.id = es.shop_id
+-- NOTES
+LEFT JOIN notes n ON n.event_id = e.id
 WHERE e.id = $1
 GROUP BY e.id`,
       [id],

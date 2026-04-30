@@ -65,53 +65,56 @@ app.get("/stored-events", async function (req, res) {
 app.post("/selected-event", async function (req, res) {
   try {
     const { id } = req.body;
+
     const query = await db.query(
-      `SELECT 
-  e.*,
-  -- Vehicles array
-  COALESCE(
-    json_agg(
-      DISTINCT jsonb_build_object(
-        'id', v.id,
-        'vehicle_name', v.vehicle_name,
-        'vehicle_reg', v.vehicle_reg
-      )
-    ) FILTER (WHERE v.id IS NOT NULL),
-    '[]'
-  ) AS vehicles,
-  -- Shops array
-  COALESCE(
-    json_agg(
-      DISTINCT jsonb_build_object(
-        'id', s.id,
-        'shop_name', s.shop_name
-      )
-    ) FILTER (WHERE s.id IS NOT NULL),
-    '[]'
-  ) AS shops
-     -- Notes array
-  COALESCE(
-    json_agg(
-      DISTINCT jsonb_build_object(
-        'note', n.note
-      )
-    ) FILTER (WHERE n.note IS NOT NULL),
-    '[]'
-  ) AS notes
-FROM tts_events e
--- VEHICLES
-LEFT JOIN event_vehicles ev ON ev.event_id = e.id
-LEFT JOIN vehicles v ON v.id = ev.vehicle_id
--- SHOPS
-LEFT JOIN event_shops es ON es.event_id = e.id
-LEFT JOIN shops s ON s.id = es.shop_id
--- NOTES
-LEFT JOIN notes n ON n.event_id = e.id
-WHERE e.id = $1
-GROUP BY e.id`,
+      `
+      SELECT 
+        e.*,
+        -- Vehicles
+        COALESCE(
+          (
+            SELECT json_agg(jsonb_build_object(
+              'id', v.id,
+              'vehicle_name', v.vehicle_name,
+              'vehicle_reg', v.vehicle_reg
+            ))
+            FROM event_vehicles ev
+            JOIN vehicles v ON v.id = ev.vehicle_id
+            WHERE ev.event_id = e.id
+          ),
+          '[]'
+        ) AS vehicles,
+        -- Shops
+        COALESCE(
+          (
+            SELECT json_agg(jsonb_build_object(
+              'id', s.id,
+              'shop_name', s.shop_name
+            ))
+            FROM event_shops es
+            JOIN shops s ON s.id = es.shop_id
+            WHERE es.event_id = e.id
+          ),
+          '[]'
+        ) AS shops,
+        -- Notes
+        COALESCE(
+          (
+            SELECT json_agg(jsonb_build_object(
+              'note', n.note
+            ))
+            FROM notes n
+            WHERE n.event_id = e.id
+          ),
+          '[]'
+        ) AS notes
+      FROM tts_events e
+      WHERE e.id = $1
+      GROUP BY e.id
+      `,
       [id],
     );
-    const data = res.json(query.rows[0]);
+    return res.json(query.rows[0]);
   } catch (error) {
     console.error(`Error: ${error}`);
     res.status(500).json({ error: "Server error" });

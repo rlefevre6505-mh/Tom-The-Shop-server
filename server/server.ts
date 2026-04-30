@@ -146,6 +146,79 @@ FROM vehicles;`);
   }
 });
 
+// UPDATE REQUESTS
+//
+// edit event details
+app.post("/edit-event", async (req, res) => {
+  const client = await db.connect();
+  try {
+    const {
+      event_id,
+      title,
+      start,
+      end,
+      location,
+      num_of_shops,
+      shops,
+      num_of_vehicles,
+      vehicles,
+    } = req.body;
+
+    await client.query("BEGIN");
+
+    // 1. Update main event row
+    await client.query(
+      `
+      UPDATE tts_events
+      SET title = $1,
+          start = $2,
+          end = $3,
+          location = $4,
+          num_of_shops = $5,
+          num_of_vehicles = $6
+      WHERE id = $7
+      `,
+      [title, start, end, location, num_of_shops, num_of_vehicles, event_id],
+    );
+
+    // 2. Clear old shop assignments
+    await client.query(`DELETE FROM event_shops WHERE event_id = $1`, [
+      event_id,
+    ]);
+
+    // 3. Insert new shop assignments
+    for (const shop of shops) {
+      await client.query(
+        `INSERT INTO event_shops (event_id, shop_id) VALUES ($1, $2)`,
+        [event_id, shop.id],
+      );
+    }
+
+    // 4. Clear old vehicle assignments
+    await client.query(`DELETE FROM event_vehicles WHERE event_id = $1`, [
+      event_id,
+    ]);
+
+    // 5. Insert new vehicle assignments
+    for (const vehicle of vehicles) {
+      await client.query(
+        `INSERT INTO event_vehicles (event_id, vehicle_id) VALUES ($1, $2)`,
+        [event_id, vehicle.id],
+      );
+    }
+
+    await client.query("COMMIT");
+
+    res.json({ status: "success" });
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error("Error editing event:", error);
+    res.status(500).json({ status: "error", message: "Failed to edit event" });
+  } finally {
+    client.release();
+  }
+});
+
 //START SERVER
 app.listen(PORT, () => {
   console.info(`Server is running in port ${PORT}`);

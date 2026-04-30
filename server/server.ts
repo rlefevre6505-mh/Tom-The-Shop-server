@@ -149,7 +149,7 @@ FROM vehicles;`);
 // UPDATE REQUESTS
 //
 // edit event details
-app.post("/edit-event", async (req, res) => {
+app.put("/edit-event", async (req, res) => {
   const client = await db.connect();
   try {
     const {
@@ -180,12 +180,10 @@ app.post("/edit-event", async (req, res) => {
       `,
       [title, start, end, location, num_of_shops, num_of_vehicles, event_id],
     );
-
     // 2. Clear old shop assignments
     await client.query(`DELETE FROM event_shops WHERE event_id = $1`, [
       event_id,
     ]);
-
     // 3. Insert new shop assignments
     for (const shop of shops) {
       await client.query(
@@ -193,12 +191,10 @@ app.post("/edit-event", async (req, res) => {
         [event_id, shop.id],
       );
     }
-
     // 4. Clear old vehicle assignments
     await client.query(`DELETE FROM event_vehicles WHERE event_id = $1`, [
       event_id,
     ]);
-
     // 5. Insert new vehicle assignments
     for (const vehicle of vehicles) {
       await client.query(
@@ -208,7 +204,6 @@ app.post("/edit-event", async (req, res) => {
     }
 
     await client.query("COMMIT");
-
     res.json({ status: "success" });
   } catch (error) {
     await client.query("ROLLBACK");

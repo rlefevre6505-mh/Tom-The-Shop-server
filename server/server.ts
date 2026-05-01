@@ -163,9 +163,7 @@ app.put("/edit-event", async (req, res) => {
       num_of_vehicles,
       vehicles,
     } = req.body;
-
     await client.query("BEGIN");
-
     // 1. Update main event row
     await client.query(
       `
@@ -178,7 +176,15 @@ app.put("/edit-event", async (req, res) => {
           num_of_vehicles = $6
       WHERE id = $7
       `,
-      [title, start, end, location, num_of_shops, num_of_vehicles, event_id],
+      [
+        title,
+        "start",
+        "end",
+        location,
+        num_of_shops,
+        num_of_vehicles,
+        event_id,
+      ],
     );
     // 2. Clear old shop assignments
     await client.query(`DELETE FROM event_shops WHERE event_id = $1`, [
@@ -202,7 +208,6 @@ app.put("/edit-event", async (req, res) => {
         [event_id, vehicle.id],
       );
     }
-
     await client.query("COMMIT");
     res.json({ status: "success" });
   } catch (error) {

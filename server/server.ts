@@ -11,7 +11,6 @@ app.get("/", (req, res) =>
 );
 
 // POST REQUESTS
-//
 // add a new event
 app.post("/add-event", (req, res) => {
   try {
@@ -51,7 +50,6 @@ app.post("/add-note", async (req, res) => {
 });
 
 // GET REQUESTS
-//
 // get all events for CalendarView
 app.get("/stored-events", async function (req, res) {
   try {
@@ -63,7 +61,6 @@ app.get("/stored-events", async function (req, res) {
     console.error(`Error: ${error}`);
   }
 });
-//
 // get event for SelectedEventView
 app.post("/selected-event", async function (req, res) {
   try {
@@ -147,7 +144,6 @@ FROM vehicles;`);
 });
 
 // PUT REQUESTS
-//
 // edit event details
 app.put("/edit-event", async (req, res) => {
   const client = await db.connect();
@@ -169,8 +165,8 @@ app.put("/edit-event", async (req, res) => {
       `
       UPDATE tts_events
       SET title = $1,
-          'start' = $2,
-          'end' = $3,
+          start = $2,
+          "end" = $3,
           location = $4,
           num_of_shops = $5,
           num_of_vehicles = $6

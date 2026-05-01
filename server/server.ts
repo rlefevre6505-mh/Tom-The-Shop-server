@@ -169,22 +169,14 @@ app.put("/edit-event", async (req, res) => {
       `
       UPDATE tts_events
       SET title = $1,
-          start = $2,
-          end = $3,
+          'start' = $2,
+          'end' = $3,
           location = $4,
           num_of_shops = $5,
           num_of_vehicles = $6
       WHERE id = $7
       `,
-      [
-        title,
-        "start",
-        "end",
-        location,
-        num_of_shops,
-        num_of_vehicles,
-        event_id,
-      ],
+      [title, start, end, location, num_of_shops, num_of_vehicles, event_id],
     );
     // 2. Clear old shop assignments
     await client.query(`DELETE FROM event_shops WHERE event_id = $1`, [

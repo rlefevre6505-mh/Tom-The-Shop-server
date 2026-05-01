@@ -146,7 +146,7 @@ FROM vehicles;`);
   }
 });
 
-// UPDATE REQUESTS
+// PUT REQUESTS
 //
 // edit event details
 app.put("/edit-event", async (req, res) => {

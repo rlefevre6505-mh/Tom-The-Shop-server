@@ -165,7 +165,7 @@ app.put("/edit-event", async (req, res) => {
       `
       UPDATE tts_events
       SET title = $1,
-          start = $2,
+          "start" = $2,
           "end" = $3,
           location = $4,
           num_of_shops = $5,

@@ -142,10 +142,10 @@ app.get("/all-event-details", async function (req: Request, res: Response) {
           '[]'
         ) AS notes
       FROM tts_events e
-        GROUP BY e.id
+        -- GROUP BY e.id  ???????
       `,
     );
-    return res.json(query.rows[0]);
+    return res.json(query.rows);
   } catch (error) {
     console.error(`Error: ${error}`);
     res.status(500).json({ error: "Server error" });

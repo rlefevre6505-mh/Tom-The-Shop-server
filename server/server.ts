@@ -38,14 +38,12 @@ app.get(
   },
 );
 // get selected event details
-app.post(
-  "/selected-event",
-  async function (req: Request, res: Response<eventDetailsObject>) {
-    try {
-      const { id } = req.body;
+app.post("/selected-event", async function (req: Request, res: Response) {
+  try {
+    const { id } = req.body;
 
-      const query = await db.query(
-        `
+    const query = await db.query(
+      `
       SELECT 
         e.*,
         -- Vehicles
@@ -90,15 +88,14 @@ app.post(
       WHERE e.id = $1
       GROUP BY e.id
       `,
-        [id],
-      );
-      return res.json(query.rows[0]);
-    } catch (error) {
-      console.error(`Error: ${error}`);
-      res.status(500).json({ error: "Server error" });
-    }
-  },
-);
+      [id],
+    );
+    return res.json(query.rows[0]);
+  } catch (error) {
+    console.error(`Error: ${error}`);
+    res.status(500).json({ error: "Server error" });
+  }
+});
 // get ALL event details
 app.get("/all-event-details", async function (req: Request, res: Response) {
   try {

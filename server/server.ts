@@ -185,7 +185,9 @@ app.post(
     try {
       const form = req.body;
       const query = db.query(
-        `INSERT INTO tts_events (title, "start", "end", date_added, location, num_of_shops) VALUES ($1, $2, $3, $4, $5, $6)`,
+        `INSERT INTO tts_events 
+    (title, "start", "end", date_added, location, num_of_shops, num_of_vehicles)
+   VALUES ($1, $2, $3, $4, $5, $6, $7)`,
         [
           form.title,
           form.start,
@@ -193,6 +195,7 @@ app.post(
           form.date_added,
           form.location,
           form.num_of_shops,
+          form.num_of_vehicles,
         ],
       );
       res.json({ status: "success", values: form });

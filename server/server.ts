@@ -177,17 +177,15 @@ FROM vehicles;`);
   },
 );
 // get full inventory
-app.get(
-  "/get-inventory",
-  async function (req: Request, res: Response<vehicles>) {
-    try {
-      const query = await db.query(`SELECT * from full_inventory)`);
-      res.json(query.rows);
-    } catch (error) {
-      console.error(`Error: ${error}`);
-    }
-  },
-);
+app.get("/get-inventory", async function (req: Request, res: Response) {
+  try {
+    const query = await db.query(`SELECT * from full_inventory`);
+    res.json(query.rows);
+  } catch (error) {
+    console.error(`Error: ${error}`);
+    res.status(500).json({ error: "Server error" });
+  }
+});
 
 // POST REQUESTS
 // add a new event

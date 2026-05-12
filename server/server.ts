@@ -176,6 +176,18 @@ FROM vehicles;`);
     }
   },
 );
+// get full inventory
+app.get(
+  "/get-inventory",
+  async function (req: Request, res: Response<vehicles>) {
+    try {
+      const query = await db.query(`SELECT * from full_inventory)`);
+      res.json(query.rows);
+    } catch (error) {
+      console.error(`Error: ${error}`);
+    }
+  },
+);
 
 // POST REQUESTS
 // add a new event

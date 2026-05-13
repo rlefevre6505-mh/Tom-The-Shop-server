@@ -235,20 +235,23 @@ app.post("/add-note", async (req: Request, res: Response) => {
 // Delete inventory item
 app.post("/delete-inventory", async (req, res) => {
   const { id } = req.body;
-  if (!id) {
-    return res.status(400).json({ error: "Missing id" });
-  }
+
   try {
+    await db.query("BEGIN");
+    await db.query("DELETE FROM equipment_lists WHERE equipment_id = $1", [id]);
     await db.query("DELETE FROM full_inventory WHERE id = $1", [id]);
-    return res.json({ success: true, id });
+    await db.query("COMMIT");
+    res.json({ success: true });
   } catch (error) {
+    await db.query("ROLLBACK");
     console.error("Delete error:", error);
-    return res.status(500).json({ error: "Failed to delete item" });
+    res.status(500).json({ error: "Failed to delete item" });
   }
 });
+
 //
 // Edit inventory item
-app.post("/update-inventory", async (req, res) => {
+app.post("/update-inventory", async (req: Request, res: Response) => {
   const { id, equipment_name, current_amount } = req.body;
   if (!id || equipment_name == null || current_amount == null) {
     return res.status(400).json({ error: "Missing fields" });

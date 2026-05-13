@@ -214,21 +214,59 @@ app.post(
     }
   },
 );
-
+//
 // add note to event
 app.post("/add-note", async (req: Request, res: Response) => {
   try {
     const form = req.body;
-
     await db.query(`INSERT INTO notes (note, event_id) VALUES ($1, $2)`, [
       form.note,
       form.event_id,
     ]);
-
     res.json({ status: "success", values: form });
   } catch (error) {
     console.error("Error inserting note:", error);
     res.status(500).json({ status: "error", message: "Failed to add note" });
+  }
+});
+//
+// Add inventory item
+//
+// Delete inventory item
+app.post("/delete-inventory", async (req, res) => {
+  const { id } = req.body;
+  if (!id) {
+    return res.status(400).json({ error: "Missing id" });
+  }
+  try {
+    await db.query("DELETE FROM full_inventory WHERE id = $1", [id]);
+    return res.json({ success: true, id });
+  } catch (error) {
+    console.error("Delete error:", error);
+    return res.status(500).json({ error: "Failed to delete item" });
+  }
+});
+//
+// Edit inventory item
+app.post("/update-inventory", async (req, res) => {
+  const { id, equipment_name, current_amount } = req.body;
+  if (!id || equipment_name == null || current_amount == null) {
+    return res.status(400).json({ error: "Missing fields" });
+  }
+  try {
+    await db.query(
+      `
+      UPDATE equipment_inventory
+      SET equipment_name = $1,
+          current_amount = $2
+      WHERE id = $3
+      `,
+      [equipment_name, current_amount, id],
+    );
+    return res.json({ success: true });
+  } catch (error) {
+    console.error("Update error:", error);
+    return res.status(500).json({ error: "Failed to update item" });
   }
 });
 

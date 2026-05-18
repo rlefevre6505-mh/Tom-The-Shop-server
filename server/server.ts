@@ -288,21 +288,20 @@ app.post("/update-inventory", async (req: Request, res: Response) => {
 });
 //
 // Add shop
-// app.post("/add-shop", async (req: Request, res: Response) => {
-//   try {
-//     const form = req.body;
-//     await db.query(
-//       `INSERT INTO shops (equipment_name, current_amount) VALUES ($1, $2)`,
-//       [form.name, form.amount],
-//     );
-//     res.json({ status: "success", values: form });
-//   } catch (error) {
-//     console.error("Error inserting item:", error);
-//     res
-//       .status(500)
-//       .json({ status: "error", message: "Failed to add item to inventory" });
-//   }
-// });
+app.post("/add-shop", async (req: Request, res: Response) => {
+  try {
+    const form = req.body;
+    await db.query(`INSERT INTO shops (shop_name) VALUES ($1)`, [
+      form.shop_name,
+    ]);
+    res.json({ status: "success", values: form });
+  } catch (error) {
+    console.error("Error inserting item:", error);
+    res
+      .status(500)
+      .json({ status: "error", message: "Failed to add item to inventory" });
+  }
+});
 //
 // Delete shop
 app.post("/delete-shop", async (req, res) => {

@@ -331,7 +331,7 @@ app.post("/update-shop", async (req: Request, res: Response) => {
     await db.query(
       `
       UPDATE shops
-      SET shop_name = $1,
+      SET shop_name = $1
       WHERE id = $2
       `,
       [shop_name, id],

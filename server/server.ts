@@ -286,6 +286,117 @@ app.post("/update-inventory", async (req: Request, res: Response) => {
     return res.status(500).json({ error: "Failed to update item" });
   }
 });
+//
+// Add shop
+// app.post("/add-shop", async (req: Request, res: Response) => {
+//   try {
+//     const form = req.body;
+//     await db.query(
+//       `INSERT INTO shops (equipment_name, current_amount) VALUES ($1, $2)`,
+//       [form.name, form.amount],
+//     );
+//     res.json({ status: "success", values: form });
+//   } catch (error) {
+//     console.error("Error inserting item:", error);
+//     res
+//       .status(500)
+//       .json({ status: "error", message: "Failed to add item to inventory" });
+//   }
+// });
+//
+// Delete shop
+app.post("/delete-shop", async (req, res) => {
+  const { id } = req.body;
+  try {
+    await db.query("BEGIN");
+    await db.query("DELETE FROM event_shops WHERE shop_id = $1", [id]);
+    await db.query("DELETE FROM shops WHERE id = $1", [id]);
+    await db.query("COMMIT");
+    res.json({ success: true });
+  } catch (error) {
+    await db.query("ROLLBACK");
+    console.error("Delete error:", error);
+    res.status(500).json({ error: "Failed to delete item" });
+  }
+});
+//
+// Edit shop details
+app.post("/update-shop", async (req: Request, res: Response) => {
+  const { id, shop_name } = req.body;
+  if (!id || shop_name == null) {
+    return res.status(400).json({ error: "Missing fields" });
+  }
+  try {
+    await db.query(
+      `
+      UPDATE shops
+      SET shop_name = $1,
+      WHERE id = $2
+      `,
+      [shop_name, id],
+    );
+    return res.json({ success: true });
+  } catch (error) {
+    console.error("Update error:", error);
+    return res.status(500).json({ error: "Failed to update item" });
+  }
+});
+//
+// Add vehicle
+// app.post("/add-vehicle", async (req: Request, res: Response) => {
+//   try {
+//     const form = req.body;
+//     await db.query(
+//       `INSERT INTO shops (equipment_name, current_amount) VALUES ($1, $2)`,
+//       [form.name, form.amount],
+//     );
+//     res.json({ status: "success", values: form });
+//   } catch (error) {
+//     console.error("Error inserting item:", error);
+//     res
+//       .status(500)
+//       .json({ status: "error", message: "Failed to add item to inventory" });
+//   }
+// });
+//
+// Delete vehicle
+app.post("/delete-vehicle", async (req, res) => {
+  const { id } = req.body;
+  try {
+    await db.query("BEGIN");
+    await db.query("DELETE FROM event_vehicles WHERE shop_id = $1", [id]);
+    await db.query("DELETE FROM vehicles WHERE id = $1", [id]);
+    await db.query("COMMIT");
+    res.json({ success: true });
+  } catch (error) {
+    await db.query("ROLLBACK");
+    console.error("Delete error:", error);
+    res.status(500).json({ error: "Failed to delete item" });
+  }
+});
+//
+// Edit vehicle details
+app.post("/update-vehicle", async (req: Request, res: Response) => {
+  const { id, vehicle_name, vehicle_reg } = req.body;
+  if (!id || vehicle_name == null || vehicle_reg == null) {
+    return res.status(400).json({ error: "Missing fields" });
+  }
+  try {
+    await db.query(
+      `
+      UPDATE shops
+      SET vehicle_name = $1,
+      SET vehicle_reg = $2,
+      WHERE id = $3
+      `,
+      [vehicle_name, vehicle_reg, id],
+    );
+    return res.json({ success: true });
+  } catch (error) {
+    console.error("Update error:", error);
+    return res.status(500).json({ error: "Failed to update item" });
+  }
+});
 
 // PUT REQUESTS
 // edit event details
